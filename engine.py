@@ -1,6 +1,8 @@
 import youtube_dl
 from pygame import mixer
 from pygame import time
+import mutagen
+
 # from time import sleep
 
 
@@ -37,6 +39,9 @@ class player:
     def load_song(self,index):
         if 0<=index<len(self.playlist):
             self.index=index
+            f=mutagen.File(self.playlist[self.index])
+            self.duration=round(f.info.length)
+            print(self.duration)
             mixer.music.load(self.playlist[self.index])
             mixer.music.play()
         else:
