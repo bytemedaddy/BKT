@@ -1,6 +1,8 @@
 import youtube_dl
 from pygame import mixer
-from pygame import time
+from pygame.time import Clock
+from time import perf_counter
+import threading
 import mutagen
 
 # from time import sleep
@@ -39,25 +41,46 @@ class player:
     def load_song(self,index):
         if 0<=index<len(self.playlist):
             self.index=index
+            self.current_time=0
+            self.start_time=0
+
             f=mutagen.File(self.playlist[self.index])
             self.duration=round(f.info.length)
-            print(self.duration)
+
+            c1=perf_counter()
+            t1=threading.Thread(target=self.time_calculator,args=[c1])
             mixer.music.load(self.playlist[self.index])
             mixer.music.play()
+            t1.start()
         else:
             print("play list index out of range")
 
     def play_pause(self):
         if mixer.music.get_busy():
             mixer.music.pause()
+            self.start_time=self.current_time
         else:
+            c1=perf_counter()
+            t1=threading.Thread(target=self.time_calculator,args=[c1])
             mixer.music.unpause()
+            t1.start()
 
     def set_volume(self,volume):
         if volume-round(volume,1)==0 and 0<=volume<=1:
             mixer.music.set_volume(volume)
         else:
             print("incorrect volume input")
+
+    def time_calculator(self,c1):
+        clock=Clock()
+        while mixer.music.get_busy():
+            c2=perf_counter()
+            self.current_time=self.start_time+c2-c1
+            clock.tick(10)
+            # print(self.current_time)
+
+
+
 
 # mixer.init()
 # mixer.music.load("./MUSICS/Duman/Duman - Senden Daha Guzel.wav")
