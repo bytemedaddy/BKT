@@ -13,7 +13,7 @@ def download_audio(url,path):
         'outtmpl':path+'%(title)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
+            'preferredcodec': 'mod',
             'preferredquality': '192',
         }],
     }
@@ -94,9 +94,26 @@ class player:
             self.load_song(self.index)
         elif self.shuffle:
             self.shuffle_index+=1
+            self.shuffle_index%=len(self.playlist)
             self.load_song(self.shuffle_index_list[self.shuffle_index])
         else:
             self.load_song((self.index+1)%len(self.playlist))
+
+    def song_end_next(self):
+        if self. shuffle:
+            self.shuffle_index+=1
+            self.shuffle_index%=len(self.playlist)
+            self.load_song(self.shuffle_index_list[self.shuffle_index%len(self.playlist)])
+        else:
+            self.load_song((self.index-1)%len(self.playlist))
+    
+    def song_end_previous(self):
+        if self. shuffle:
+            self.shuffle_index-=1
+            self.load_song(self.shuffle_index_list[self.shuffle_index%len(self.playlist)])
+        else:
+            self.load_song((self.index+1)%len(self.playlist))
+    
 
     def time_keeper(self):
         clock=Clock()
