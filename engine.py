@@ -4,6 +4,7 @@ from pygame.time import Clock
 from time import perf_counter,sleep
 import threading
 import mutagen
+import random
 
 
 def download_audio(url,path):
@@ -74,7 +75,11 @@ class player:
 
     def shuffle(self):
         self.shuffle=not self.shuffle
-
+        if self.shuffle:
+            self.shuffle_index=0
+            self.shuffle_index_list=list([i for i in range(self.playlist) if i != self.index])
+            random.shuffle(self.shuffle_index_list)
+            self.shuffle_index_list=[self.index]+self.shuffle_index_list
     def set_position(self,sec):
         self.load_song(self.index,sec)
 
@@ -88,8 +93,8 @@ class player:
         if self.repeat:
             self.load_song(self.index)
         elif self.shuffle:
-            pass
-            #TODO:add shuffle logic
+            self.shuffle_index+=1
+            self.load_song(self.shuffle_index_list[self.shuffle_index])
         else:
             self.load_song((self.index+1)%len(self.playlist))
 
