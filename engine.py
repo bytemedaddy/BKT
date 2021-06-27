@@ -5,8 +5,6 @@ from time import perf_counter,sleep
 import threading
 import mutagen
 
-# from time import sleep
-
 
 def download_audio(url,path):
     ydl_opts = {
