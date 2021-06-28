@@ -1,8 +1,7 @@
-import engine
-import threading
+import PLAYER
 
 
-player = engine.player()
+player = PLAYER.player()
 
 def loop():
     while True:
