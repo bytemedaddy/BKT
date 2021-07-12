@@ -1,24 +1,83 @@
 import youtube_dl
+import pafy
 from pygame import mixer
 from pygame.time import Clock
 from time import perf_counter,sleep
 import threading
 import mutagen
 import random
+import os
+import requests
+import shutil
+
+
+def read_all_downloaded_list():
+    list=[]
+    file="./LISTS/all.txt"
+    with open(file,"r") as file:
+        list=file.read().split("\n")
+    return list[:-1]
+
+def read_fav_list():
+    list=[]
+    file="./LISTS/favorite.txt"
+    with open(file,"r") as file:
+        list=file.read().split("\n")
+    return list[:-1]
+
+def write_fav_list(list):
+    file="./LISTS/favorite.txt"
+    with open(file,"w") as file:
+        for line in list:
+            file.write(line+"\n")
+    
+def write_all_songs():
+    path ='./MUSICS'
+    list_of_songs = []
+
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            list_of_songs.append(os.path.join(root,file))
+
+    file="./all.txt"
+    with open(file,"w") as file:
+        for line in list_of_songs:
+            file.write(line+"\n")
+
+
+
+
+
+
 
 
 def download_audio(url,path):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl':path+'%(title)s.%(ext)s',
+        'outtmpl':path+url.split("v=")[-1]+'/%(title)s.%(ext)s',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mod',
+            'preferredcodec': 'wav',
             'preferredquality': '192',
         }],
     }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
+    ytpafy=pafy.new(url)
+    if ytpafy.bigthumbhd:
+        thump=ytpafy.bigthumbhd
+    else:
+        thump=ytpafy.bigthumb
+
+    r=requests.get(thump,stream=True)
+    with open(path+url.split("v=")[-1]+"/"+ytpafy.title+".jpg","bw") as f:
+        r.raw.decode_content = True
+        shutil.copyfileobj(r.raw, f)
+
+
+
+
+
 
 
 class player:
@@ -30,6 +89,8 @@ class player:
         self.shuffle=False
         self.playlist=[]
         self.index=None
+        self.current_time=0
+        self.duration=1
 
     def load_playlist(self,playlist):
         if playlist:
@@ -127,19 +188,8 @@ class player:
                     self.song_done()
                 break
             clock.tick(30)
-            
 
 
 
 
-# mixer.init()
-# mixer.music.load("./MUSICS/Duman/Duman - Senden Daha Guzel.wav")
-# mixer.music.play()
-# sleep(5)
-# print(mixer.music.get_pos())
-# mixer.music.set_pos(10)  
-# sleep(5)
-
-
-
-# download_audio("https://www.youtube.com/watch?v=3bfkyXtuIXk","./MUSICS/%(channel)s/")
+# download_audio("https://www.youtube.com/watch?v=3bfkyXtuIXk","./MUSICS/")

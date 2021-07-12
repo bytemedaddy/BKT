@@ -12,7 +12,7 @@ def loop():
         elif command=="l":
             # path=input()
             # player.load_playlist([path])
-            player.load_playlist(["./MUSICS/Duman/Duman - Senden Daha Guzel.wav","./MUSICS/Calvin Harris/Calvin Harris & Disciples - How Deep Is Your Love.wav"])
+            player.load_playlist(["./MUSICS/3bfkyXtuIXk/Duman - Senden Daha Guzel.wav"])
             player.load_song(0)
         elif command=="ps":
             player.play_pause()
